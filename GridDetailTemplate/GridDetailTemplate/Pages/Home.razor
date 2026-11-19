@@ -1,0 +1,253 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Data
+
+<div class="page-shell">
+
+    <header class="page-intro">
+        <h3 class="grid-page-title">
+            Hierarchy Grid with Nested Detail Templates
+        </h3>
+    </header>
+
+    <section class="feature-panel" aria-labelledby="features-heading">
+        <div class="feature-heading">
+            <h2 id="features-heading">Features Enabled</h2>
+            <span class="ready-label">
+                <span aria-hidden="true"></span>
+                Ready to explore
+            </span>
+        </div>
+
+        <ul class="feature-list">
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Three-Level Hierarchy
+            </li>
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Detail Template
+            </li>
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Sticky Headers
+            </li>
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Paging
+            </li>
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Filtering
+            </li>
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Sorting
+            </li>
+
+            <li class="feature-chip">
+                <span aria-hidden="true">✓</span>
+                Resizing
+            </li>
+        </ul>
+    </section>
+
+    <section class="grid-card" aria-labelledby="grid-heading">
+
+        <div class="grid-card-header">
+            <div>
+                <h2 id="grid-heading">
+                    Well Management Hierarchy
+                </h2>
+
+                <p>
+                    This example demonstrates a three-level hierarchical
+                    DataGrid used for Well Management. Expand a Well record
+                    to view Well Origin information. Further expanding a
+                    Well Origin record displays related Wellbore and
+                    Completion details. The sample also demonstrates
+                    Sticky Headers in nested DetailTemplate grids along
+                    with Paging, Filtering, Sorting, and Resizing support.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid-wrapper">
+
+           
+            <SfGrid TValue="ParentRow"
+                    DataSource="@Parents"
+                    Height="500px"
+                    AllowPaging="true"
+                    AllowFiltering="true"
+                    AllowSorting="true"
+                    AllowResizing="true">
+
+                <GridTemplates>
+                    <DetailTemplate Context="parentContext">
+                        @{
+                            var parent = parentContext as ParentRow;
+                        }
+
+                        <SfGrid TValue="OriginRow"
+                                DataSource="@Origins"
+                                Width="1400px"
+                                Height="350px"
+                                EnableStickyHeader="true"
+                                Query="@(new Query()
+                                    .Where(nameof(OriginRow.WellOriginId), "equal", parent?.WellOriginId))">
+
+                            <GridTemplates Context="originContext">
+
+                                <DetailTemplate>
+                                    @{
+                                        var origin = originContext as OriginRow;
+                                    }
+
+                                    <div class="p-2">
+
+                                        <h5>Wellbore Information</h5>
+
+                                        <SfGrid TValue="WellboreRow"
+                                                DataSource="@Wellbores"
+                                                Width="1200px"
+                                                Height="350px"
+                                                EnableStickyHeader="true"
+                                                Query="@(new Query()
+                                                    .Where(nameof(WellboreRow.OriginId), "equal", origin?.OriginId))">
+
+                                            <GridColumns>
+                                                <GridColumn Field=@nameof(WellboreRow.WellboreId)
+                                                            HeaderText="Wellbore ID"
+                                                            Width="150" />
+
+                                                <GridColumn Field=@nameof(WellboreRow.DrillingUWI)
+                                                            HeaderText="Drilling UWI"
+                                                            Width="220" />
+
+                                                <GridColumn Field=@nameof(WellboreRow.LicenseNumber)
+                                                            HeaderText="License Number"
+                                                            Width="180" />
+
+                                                <GridColumn Field=@nameof(WellboreRow.TVD)
+                                                            HeaderText="TVD (m)"
+                                                            Width="120" />
+
+                                                <GridColumn Field=@nameof(WellboreRow.TMD)
+                                                            HeaderText="TMD (m)"
+                                                            Width="120" />
+
+                                                <GridColumn Field=@nameof(WellboreRow.WellType)
+                                                            HeaderText="Well Type"
+                                                            Width="160" />
+                                            </GridColumns>
+
+                                        </SfGrid>
+
+                                        <br />
+
+                                        <h5>Completion Information</h5>
+
+                                        <SfGrid TValue="CompletionRow"
+                                                DataSource="@Completions"
+                                                Width="1200px"
+                                                Height="350px"
+                                                EnableStickyHeader="true"
+                                                Query="@(new Query().Where(nameof(CompletionRow.OriginId), "equal", origin?.OriginId))">
+
+                                            <GridColumns>
+                                                <GridColumn Field=@nameof(CompletionRow.CompletionId)
+                                                            HeaderText="Completion ID"
+                                                            Width="150" />
+
+                                                <GridColumn Field=@nameof(CompletionRow.CompletionUWI)
+                                                            HeaderText="Completion UWI"
+                                                            Width="220" />
+
+                                                <GridColumn Field=@nameof(CompletionRow.OnProductionDate)
+                                                            HeaderText="Production Date"
+                                                            Format="d"
+                                                            Width="170" />
+
+                                                <GridColumn Field=@nameof(CompletionRow.Status)
+                                                            HeaderText="Status"
+                                                            Width="150" />
+
+                                                <GridColumn Field=@nameof(CompletionRow.Reservoir)
+                                                            HeaderText="Reservoir"
+                                                            Width="180" />
+                                            </GridColumns>
+
+                                        </SfGrid>
+
+                                    </div>
+
+                                </DetailTemplate>
+
+                            </GridTemplates>
+
+                            <GridColumns>
+                                <GridColumn Field=@nameof(OriginRow.OriginId)
+                                            HeaderText="Origin ID"
+                                            Width="120" />
+
+                                <GridColumn Field=@nameof(OriginRow.SurfaceLocation)
+                                            HeaderText="Surface Location"
+                                            Width="250" />
+
+                                <GridColumn Field=@nameof(OriginRow.WellName)
+                                            HeaderText="Well Name"
+                                            Width="220" />
+
+                                <GridColumn Field=@nameof(OriginRow.LicenseNumber)
+                                            HeaderText="License Number"
+                                            Width="170" />
+
+                                <GridColumn Field=@nameof(OriginRow.Operator)
+                                            HeaderText="Operator"
+                                            Width="250" />
+                            </GridColumns>
+
+                        </SfGrid>
+
+                    </DetailTemplate>
+                </GridTemplates>
+
+                <GridColumns>
+
+                    <GridColumn Field=@nameof(ParentRow.UWI)
+                                HeaderText="UWI"
+                                Width="220" />
+
+                    <GridColumn Field=@nameof(ParentRow.WellName)
+                                HeaderText="Well Name"
+                                Width="220" />
+
+                    <GridColumn Field=@nameof(ParentRow.FieldName)
+                                HeaderText="Field"
+                                Width="180" />
+
+                    <GridColumn Field=@nameof(ParentRow.Operator)
+                                HeaderText="Operator"
+                                Width="250" />
+
+                    <GridColumn Field=@nameof(ParentRow.Region)
+                                HeaderText="Region"
+                                Width="150" />
+
+                </GridColumns>
+
+            </SfGrid>
+
+        </div>
+
+    </section>
+
+</div>
